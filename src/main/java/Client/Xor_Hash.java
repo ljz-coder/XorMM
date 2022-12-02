@@ -14,7 +14,9 @@ import static util.tool.longToBytes;
 public class Xor_Hash {
     private static Random random = new Random();
 
+    // 加密秘钥
     private static int K_e = 012;
+    // 索引
     private static long K_d = 123;
     private static int K_p = 678;
     private static int K_m = 345;
@@ -48,8 +50,10 @@ public class Xor_Hash {
             enc_list[i] = AESUtil.encrypt(K,(kv_list[i].value).getBytes());
         }
         MappingStep(kv_list,table_size,level);
+        // 填充
         for(int i=0;i<EMM.length;i++){
             if(EMM[i]==null){
+                // random.nextInt 0到bound [0,bound)
                 EMM[i] = Hash.Get_Sha_128(longToBytes(random.nextInt(1000)));
             }
         }
@@ -105,8 +109,9 @@ public class Xor_Hash {
         int blockLength = table_size;
         long[] reverseOrder = new long[arrayLength];
         byte[] reverseH = new byte[arrayLength];
-        int HASHES = 3;
+        int HASHES = 3; // cnt ,hash functions
         int reverseOrderPos;
+        // alg2
         do {
             reverseOrderPos = 0;
             leave_map.clear();
@@ -114,15 +119,18 @@ public class Xor_Hash {
             K_d = random.nextLong();
             byte[] t2count = new byte[arrayLength];
             long[] t2 = new long[arrayLength];
+
             for (int i = 0; i < kv_list.length; i++) {
                 long k = i;
                 for (int hi = 0; hi < HASHES; hi++) {
+                    // string + int
                     String ks = kv_list[(int)k].key+","+kv_list[(int)k].counter;
                     String k0 = ks+","+hi;
                     int Node,current;
                     if(leave_map.containsKey(k0)) {
                         current = leave_map.get(k0);
                     }else {
+                        // 如果，该键（key + cnt)是第一次 加入到leave_map，则创建 三个键值对
                         byte[] kv = GGM.Tri_GGM_Path(Hash.Get_SHA_256((kv_list[(int) k].key+K_d).getBytes()), level, tool.TtS(kv_list[(int) k].counter, 3, level));
                         current = GGM.Map2Range(Arrays.copyOfRange(kv, 1 , 9),table_size,0);
                         leave_map.put(k0,current);
@@ -132,13 +140,15 @@ public class Xor_Hash {
                         leave_map.put(ks+",2",Node);
                     }
                     int h = current;
-                    t2[h]^=  k;
+                    t2[h] ^=  k;
                     if (t2count[h] > 120) {
                         throw new IllegalArgumentException();
                     }
                     t2count[h]++;
                 }
             }
+
+
             int[][] alone = new int[HASHES][blockLength];
             int[] alonePos = new int[HASHES];
             for (int nextAlone = 0; nextAlone < HASHES; nextAlone++) {
@@ -185,6 +195,8 @@ public class Xor_Hash {
             }
             Try_Times++;
         }while(reverseOrderPos  != kv_list.length);
+
+        // alg 5-15 line
         for (int i = reverseOrderPos - 1; i >= 0; i--) {
             int k = (int) reverseOrder[i];
             int found = reverseH[i];
@@ -223,8 +235,6 @@ public class Xor_Hash {
     public byte[][] Get_VMM(){ return VMM;}
 
     public void Leave_Map_Clear() { leave_map.clear(); k_list.clear();}
-
-
 
 
 }

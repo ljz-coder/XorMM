@@ -22,7 +22,10 @@ public class Test_XorMM {
     public static void main(String[] args) throws Exception {
         //maximum volume length
         int MAX_VOLUME_LENGTH = (int) Math.pow(2, 5);
+        // $\log_3MAX_VOLUME_LENGTH $ =Math.ceil(Math.log(MAX_VOLUME_LENGTH) / Math.log(3.0))
+        //叶子数 = 3^leverl
         int XOR_LEVEL = (int) Math.ceil(Math.log(MAX_VOLUME_LENGTH) / Math.log(3.0));//GGM Tree level for xor hash
+//        System.out.println("xor_level = "+ XOR_LEVEL);
 
         //data size
         int power_size = 10;
@@ -48,6 +51,8 @@ public class Test_XorMM {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+        // 打印 kv_list i, key , value
+        Print_kv_list(kv_list);
 
         System.out.println("---------------------XorMM scheme(our scheme)---------------------");
         //setup phase
@@ -81,4 +86,14 @@ public class Test_XorMM {
         }
         xor_server.Store_Server("XorMM");
     }
+
+    public static void Print_kv_list(KV[] a) {
+        for (int i = 0; i < a.length; i++) {
+            System.out.println(i+" "+a[i].key+":"+a[i].value);
+        }
+    }
 }
+
+
+
+

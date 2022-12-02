@@ -82,6 +82,7 @@ public class tool {
         }
     }
 
+    //获取 “方向”数组
     public static int[] TtS(int inNum, int index, int level) {
         int[] result = new int[level];
         int i = 0;
